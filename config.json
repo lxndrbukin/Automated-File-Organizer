@@ -1,0 +1,18 @@
+{
+  "target_dir": "/home/lxndrbukin/Downloads" ,
+  "sort_dirs": [
+    {
+      "Images": [
+        ".jpg",
+        ".png"
+      ]
+    },
+    {
+      "Documents": [
+        ".xlsx",
+        ".doc",
+        ".pdf"
+      ]
+    }
+  ]
+}
