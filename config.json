@@ -1,17 +1,40 @@
 {
-  "target_dir": "/home/lxndrbukin/Downloads" ,
+  "target_dir": "/home/[user]/Downloads" ,
   "sort_dirs": [
     {
       "Images": [
         ".jpg",
-        ".png"
+        ".png",
+        ".jpeg",
+        ".gif",
+        ".webp"
       ]
     },
     {
       "Documents": [
         ".xlsx",
         ".doc",
-        ".pdf"
+        ".pdf",
+        ".md",
+        ".markdown",
+        ".csv",
+        ".xlsx",
+        ".docx",
+        ".txt"
+      ]
+    },
+    {
+      "Videos": [
+        ".mp4",
+        ".mov",
+        ".avi"
+      ]
+    },
+    {
+      "Software": [
+        ".iso",
+        ".AppImage",
+        ".rpm"
       ]
     }
   ]
