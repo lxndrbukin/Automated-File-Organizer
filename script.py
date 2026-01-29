@@ -12,9 +12,8 @@ if not Path.exists(config_path):
         action = ""
         while action.lower() not in ["y", "n"]:
             action = input(f"Proceed with organizing directory '{default_target_dir}'? y/n: ")
-            if action not in ["y", "n"]:
+            if action.lower() not in ["y", "n"]:
                 print("Please enter 'y' or 'n'")
-
     if action.lower() == 'y':
         print(f"Sorting '{default_target_dir}'...")
     elif action.lower() == 'n':
@@ -32,11 +31,16 @@ def sort_to_dir(src_dir, sort_dir, formats):
     for item in src_dir.iterdir():
         dt = datetime.fromtimestamp(item.stat().st_mtime).date()
         item_path = src_dir / item.name
-        target_item_path = sort_dir_path / f"{sort_dir.lower()}_{str(dt)}"
+        target_item_dir = sort_dir_path / f"{sort_dir.lower()}_{str(dt)}"
         if item.is_file():
+            item_name = item.name
             if item.suffix.lower() in formats:
-                target_item_path.mkdir(exist_ok=True)
-                shutil.move(item_path, target_item_path / item.name)
+                target_item_dir.mkdir(exist_ok=True)
+                counter = 1
+                while Path.exists(target_item_dir / item_name):
+                    counter += 1
+                    item_name = item.stem + f"_{str(counter)}" + item.suffix
+                shutil.move(item_path, target_item_dir / item_name)
 
 def run_script():
     try:
@@ -44,6 +48,7 @@ def run_script():
             for name, formats in dir.items():
                 formats = [file_format.lower() for file_format in formats]
                 sort_to_dir(target_dir, name, formats)
+
     except FileNotFoundError as e:
         print(e)
 
