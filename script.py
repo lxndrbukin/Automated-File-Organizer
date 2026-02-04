@@ -1,4 +1,4 @@
-from utils import home_dir, config_path, log_path, default_config, default_target_dir
+from utils import home_dir, config_path, log_path, config, default_src_dir
 from datetime import datetime
 from pathlib import Path
 import shutil
@@ -6,18 +6,53 @@ import json
 import sys
 import openpyxl
 
+default_config = config()
+
 if not Path.exists(config_path):
     with open("config.json", "w") as config_file:
         json.dump(default_config, config_file, indent=4)
         print("Default 'config.json' generated.")
         action = ""
         while action.lower() not in ["y", "n"]:
-            action = input(f"Proceed with organizing directory '{default_target_dir}'? y/n: ")
+            action = input(f"Proceed with organizing directory '{default_src_dir}'? y/n: ")
             if action.lower() not in ["y", "n"]:
                 print("Please enter 'y' or 'n'")
-    if action.lower() == 'n':
-        print("Configure 'config.json' to your needs and re-run the script.")
-        sys.exit()
+    if action.lower() == "n":
+        while True:
+            src_path = Path(input("Please enter the full source directory for sorting:\n"))
+            if not Path.exists(src_path):
+                print("The provided source directory doesn't exist. Please enter an existing directory.")
+            else:
+                break
+        while True:
+            target_path = home_dir
+            target_dirs = input("Please enter target directories, separated by commas (e.g. Images,Videos,Documents):\n")
+            confirmation = ""
+            while confirmation.lower() not in ["y", "n"]:
+                confirmation = input(
+                    f"Entered directories will be created under {home_dir}.\n Would you like to proceed? y/n: ")
+                if confirmation not in ["y", "n"]:
+                    print("Please enter 'y' or 'n'")
+            if confirmation.lower() == "n":
+                while True:
+                    target_path = Path(input("Please enter the desired full target path:\n"))
+                    if not Path.exists(target_path):
+                        print("Provided target path doesn't exist. Please enter an existing path.")
+            for dir in target_dirs.replace(" ", ""):
+                target_dir_path = Path(target_path / dir)
+                target_dir_path.mkdir(exist_ok=True)
+elif not Path.exists(default_config["src_dir"]):
+    print(f"Directory {default_config["src_dir"]} does not exist")
+    option = int(input("Would you like to:\n1. Create the directory\n2. Update src_dir\nPlease enter option number: "))
+    if option == 1:
+        new_dir = Path(default_config["src_dir"])
+        new_dir.mkdir()
+        print("Directory created")
+    elif option == 2:
+        new_dir = Path(input("Please enter the new directory path: "))
+        with open("config.json", "w") as config_file:
+            json.dump(config(new_dir), config_file, indent=4)
+            print("'config.json' updated!")
 
 with open("config.json", "r") as config_file:
     config = json.load(config_file)
@@ -68,7 +103,7 @@ def sort_to_dir(src_dir, sort_dir, formats):
 
 def run_script():
     try:
-        print(f"Sorting '{default_target_dir}'...")
+        print(f"Sorting '{default_src_dir}'...")
         for dir in config["target_dirs"]:
             for name, formats in dir.items():
                 formats = [file_format.lower() for file_format in formats]
