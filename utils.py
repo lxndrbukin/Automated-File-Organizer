@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 home_dir = Path.home()
 default_src_dir = home_dir / "Downloads"
@@ -14,9 +15,9 @@ default_target_dirs = [
 
 def config(src_dir=default_src_dir, target_path=home_dir, target_dirs=default_target_dirs):
     return {
-            "src_dir": src_dir,
+            "src_dir": str(src_dir),
             "target_dirs_config": {
-                "target_path": target_path,
+                "target_path": str(target_path),
                 "target_dirs": target_dirs
             }
         }
