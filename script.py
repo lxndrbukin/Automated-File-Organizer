@@ -5,7 +5,6 @@ import shutil
 import json
 import openpyxl
 
-
 default_config = config()
 
 if not Path.exists(config_path):
