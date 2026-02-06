@@ -123,6 +123,7 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs):
                 log_rows.append(log_row)
                 try:
                     shutil.move(item_path, target_item_dir / item_name)
+                    print(f"✓ {item.name} → {target_item_dir / item_name}")
                 except PermissionError as e:
                     print(e)
 
