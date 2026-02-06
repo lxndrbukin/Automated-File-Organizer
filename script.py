@@ -41,9 +41,9 @@ if not Path.exists(config_path):
                     else:
                         break
             target_dirs = []
-            for dir in target_dirs_list.replace(" ", "").split(","):
-                formats = input(f"Please enter desired file extensions to be saved in {target_path / dir} directory (e.g. xlsx,doc,gif):\n").replace(" ", "").split(",")
-                sub_dir_example = Path(target_path / dir / f"{dir.lower()}_{date.today()}")
+            for category in target_dirs_list.replace(" ", "").split(","):
+                formats = input(f"Please enter desired file extensions to be saved in {target_path / category} directory (e.g. xlsx,doc,gif):\n").replace(" ", "").split(",")
+                sub_dir_example = Path(target_path / category / f"{category.lower()}_{date.today()}")
                 sub_dirs = True
                 while True:
                     sub_dir_check = input(
@@ -54,7 +54,7 @@ if not Path.exists(config_path):
                         break
                 if sub_dir_check.lower() == "n":
                     sub_dirs = False
-                target_dirs.append({f"{dir}": {"formats": formats, "sub_dirs": sub_dirs}})
+                target_dirs.append({f"{category}": {"formats": formats, "sub_dirs": sub_dirs}})
             with open("config.json", "w") as config_file:
                 json.dump(config(src_dir=src_path, target_path=target_path, target_dirs=target_dirs), config_file, indent=4)
                 print("'config.json' now configured")
@@ -104,34 +104,34 @@ def log_to_doc(doc, rows):
 def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs):
     sort_dir_path = home_dir / sort_dir
     sort_dir_path.mkdir(exist_ok=True)
-    for item in src_dir.iterdir():
-        dt = datetime.fromtimestamp(item.stat().st_mtime).date()
-        item_path = src_dir / item.name
+    for file in src_dir.iterdir():
+        file_date = datetime.fromtimestamp(file.stat().st_mtime).date()
+        file_path = src_dir / file.name
         if use_sub_dirs:
-            target_item_dir = sort_dir_path / f"{sort_dir.lower()}_{str(dt)}"
+            target_dir_path = sort_dir_path / f"{sort_dir.lower()}_{str(file_date)}"
         else:
-            target_item_dir = sort_dir_path
-        item_name = item.name
-        if item.is_file():
-            if item.suffix.lower() in formats:
+            target_dir_path = sort_dir_path
+        file_name = file.name
+        if file.is_file():
+            if file.suffix.lower() in formats:
                 counter = 0
-                target_item_dir.mkdir(exist_ok=True)
-                while Path.exists(target_item_dir / item_name):
+                target_dir_path.mkdir(exist_ok=True)
+                while Path.exists(target_dir_path / file_name):
                     counter += 1
-                    item_name = item.stem + f"_{str(counter)}" + item.suffix
-                log_row = [str(src_dir), str(target_item_dir), item.name, item_name if item_name != item.name else "", str(dt)]
+                    file_name = file.stem + f"_{str(counter)}" + file.suffix
+                log_row = [str(src_dir), str(target_dir_path), file.name, file_name if file_name != file.name else "", str(file_date)]
                 log_rows.append(log_row)
                 try:
-                    shutil.move(item_path, target_item_dir / item_name)
-                    print(f"✓ {item.name} → {target_item_dir / item_name}")
+                    shutil.move(file_path, target_dir_path / file_name)
+                    print(f"✓ {file.name} → {target_dir_path / file_name}")
                 except PermissionError as e:
                     print(e)
 
 def run_script():
     try:
         print(f"Sorting '{default_src_dir}'...")
-        for dir_config in config["target_dirs_config"]["target_dirs"]:
-            for name, formats in dir_config.items():
+        for category_config in config["target_dirs_config"]["target_dirs"]:
+            for name, formats in category_config.items():
                 formats_list = ["." + fmt if not fmt.startswith(".") else fmt for fmt in formats["formats"]]
                 sort_to_dir(src_dir, name, formats_list, formats["sub_dirs"])
         if len(log_rows):
