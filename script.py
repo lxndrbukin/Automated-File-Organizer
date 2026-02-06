@@ -42,19 +42,25 @@ if not Path.exists(config_path):
                         break
             target_dirs = []
             for category in target_dirs_list.replace(" ", "").split(","):
+                recursive_check = ""
+                while recursive_check.lower() not in ["y", "n"]:
+                    recursive_check = input(f"Scan subdirectories recursively when organizing {category}? y/n: ")
+                    if recursive_check.lower() not in ["y", "n"]:
+                        print("Please enter 'y' or 'n'")
+                recursive = recursive_check.lower() == "y"
                 formats = input(f"Please enter desired file extensions to be saved in {target_path / category} directory (e.g. xlsx,doc,gif):\n").replace(" ", "").split(",")
                 sub_dir_example = Path(target_path / category / f"{category.lower()}_{date.today()}")
                 sub_dirs = True
                 while True:
                     sub_dir_check = input(
-                        f"Would you like the files to be sorted into sub directories based on dates? (e.g. {sub_dir_example}) y/n: ")
+                        f"Would you like the files to be sorted into subdirectories based on dates? (e.g. {sub_dir_example}) y/n: ")
                     if sub_dir_check.lower() not in ["y", "n"]:
                         print("Please enter 'y' or 'n'.")
                     else:
                         break
                 if sub_dir_check.lower() == "n":
                     sub_dirs = False
-                target_dirs.append({f"{category}": {"formats": formats, "sub_dirs": sub_dirs}})
+                target_dirs.append({f"{category}": {"formats": formats, "sub_dirs": sub_dirs, "recursive": recursive}})
             with open("config.json", "w") as config_file:
                 json.dump(config(src_dir=src_path, target_path=target_path, target_dirs=target_dirs), config_file, indent=4)
                 print("'config.json' now configured")
@@ -101,12 +107,15 @@ def log_to_doc(doc, rows):
         log_ws.append(row)
     log_wb.save("logs.xlsx")
 
-def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs):
+def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive):
     sort_dir_path = home_dir / sort_dir
     sort_dir_path.mkdir(exist_ok=True)
-    for file in src_dir.iterdir():
+    if recursive:
+        files_to_process = src_dir.rglob("*")
+    else:
+        files_to_process = src_dir.iterdir()
+    for file in files_to_process:
         file_date = datetime.fromtimestamp(file.stat().st_mtime).date()
-        file_path = src_dir / file.name
         if use_sub_dirs:
             target_dir_path = sort_dir_path / f"{sort_dir.lower()}_{str(file_date)}"
         else:
@@ -119,10 +128,10 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs):
                 while Path.exists(target_dir_path / file_name):
                     counter += 1
                     file_name = file.stem + f"_{str(counter)}" + file.suffix
-                log_row = [str(src_dir), str(target_dir_path), file.name, file_name if file_name != file.name else "", str(file_date)]
+                log_row = [str(file.parent), str(target_dir_path), file.name, file_name if file_name != file.name else "", str(file_date)]
                 log_rows.append(log_row)
                 try:
-                    shutil.move(file_path, target_dir_path / file_name)
+                    shutil.move(file, target_dir_path / file_name)
                 except PermissionError as e:
                     print(e)
 
@@ -132,7 +141,7 @@ def run_script():
         for category_config in config["target_dirs_config"]["target_dirs"]:
             for name, formats in category_config.items():
                 formats_list = ["." + fmt if not fmt.startswith(".") else fmt for fmt in formats["formats"]]
-                sort_to_dir(src_dir, name, formats_list, formats["sub_dirs"])
+                sort_to_dir(src_dir, name, formats_list, formats["sub_dirs"], formats["recursive"])
         if len(log_rows):
             log_to_doc("logs.xlsx", log_rows)
             print(f"Sorting complete! {len(log_rows)} file(s) organized.\n")
