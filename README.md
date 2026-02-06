@@ -237,7 +237,7 @@ The script handles common issues gracefully:
 - [x] Excel logging for audit trails
 - [x] Configurable subdirectory creation
 - [ ] Dry-run mode to preview changes
-- [ ] Terminal summary table with statistics (using `tabulate`)
+- [x] Terminal summary table with statistics (using `tabulate`)
 - [ ] Undo functionality using log file
 - [ ] Recursive directory processing
 - [ ] File size filters and limits
