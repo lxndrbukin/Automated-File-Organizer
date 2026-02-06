@@ -25,15 +25,14 @@ if not Path.exists(config_path):
                 print("The provided source directory doesn't exist. Please enter an existing directory.")
             else:
                 break
-        while True:
-            target_path = home_dir
-            target_dirs_list = input("Please enter target directories, separated by commas (e.g. Images,Videos,Documents):\n")
-            confirmation = ""
-            while confirmation.lower() not in ["y", "n"]:
-                confirmation = input(
-                    f"Entered directories will be created under {home_dir}.\n Would you like to proceed? y/n: ")
-                if confirmation.lower() not in ["y", "n"]:
-                    print("Please enter 'y' or 'n'")
+        target_path = home_dir
+        target_dirs_list = input("Please enter target directories, separated by commas (e.g. Images,Videos,Documents):\n")
+        confirmation = ""
+        while confirmation.lower() not in ["y", "n"]:
+            confirmation = input(
+                f"Entered directories will be created under {home_dir}.\n Would you like to proceed? y/n: ")
+            if confirmation.lower() not in ["y", "n"]:
+                print("Please enter 'y' or 'n'")
             if confirmation.lower() == "n":
                 while True:
                     target_path = Path(input("Please enter the desired full target path:\n"))
