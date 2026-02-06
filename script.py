@@ -1,6 +1,7 @@
 from utils import home_dir, config_path, log_path, config, default_src_dir
 from datetime import datetime, date
 from pathlib import Path
+from tabulate import tabulate
 import shutil
 import json
 import openpyxl
@@ -123,20 +124,22 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs):
                 log_rows.append(log_row)
                 try:
                     shutil.move(file_path, target_dir_path / file_name)
-                    print(f"✓ {file.name} → {target_dir_path / file_name}")
                 except PermissionError as e:
                     print(e)
 
 def run_script():
     try:
-        print(f"Sorting '{default_src_dir}'...")
+        print(f"Sorting '{default_src_dir}'...\n")
         for category_config in config["target_dirs_config"]["target_dirs"]:
             for name, formats in category_config.items():
                 formats_list = ["." + fmt if not fmt.startswith(".") else fmt for fmt in formats["formats"]]
                 sort_to_dir(src_dir, name, formats_list, formats["sub_dirs"])
         if len(log_rows):
             log_to_doc("logs.xlsx", log_rows)
-            print("Sorting complete!")
+            print(f"Sorting complete! {len(log_rows)} file(s) organized.\n")
+            display_rows = [[row[2], row[3] or "-", Path(row[1]).parts[-1]]
+                            for row in log_rows]
+            print(tabulate(display_rows, headers=["File", "Renamed To", "Destination Folder"]))
         else:
             print("No files to sort")
     except FileNotFoundError as e:
