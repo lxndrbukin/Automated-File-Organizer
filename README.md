@@ -239,7 +239,7 @@ The script handles common issues gracefully:
 - [ ] Dry-run mode to preview changes
 - [x] Terminal summary table with statistics (using `tabulate`)
 - [ ] Undo functionality using log file
-- [ ] Recursive directory processing
+- [x] Recursive directory processing
 - [ ] File size filters and limits
 - [ ] Archive old files feature
 - [ ] Command-line arguments (`--dry-run`, `--config`, `--verbose`)
