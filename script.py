@@ -89,8 +89,8 @@ if not Path.exists(log_path):
     wb = openpyxl.Workbook()
     ws = wb["Sheet"]
     ws.title = "Logs"
-    header_row = ws["A1:E1"]
-    log_headers = ["Source Dir", "Target Dir", "Old name", "New name", "Date sorted"]
+    header_row = ws["A1:C1"]
+    log_headers = ["File", "Renamed To", "Destination"]
     for i, cell in enumerate(header_row[0]):
         cell.value = log_headers[i]
     wb.save("logs.xlsx")
@@ -128,7 +128,7 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive):
                 while Path.exists(target_dir_path / file_name):
                     counter += 1
                     file_name = file.stem + f"_{str(counter)}" + file.suffix
-                log_row = [str(file.parent), str(target_dir_path), file.name, file_name if file_name != file.name else "", str(file_date)]
+                log_row = [file.name, file_name if file_name != file.name else "-", str(target_dir_path)]
                 log_rows.append(log_row)
                 try:
                     shutil.move(file, target_dir_path / file_name)
@@ -145,7 +145,7 @@ def run_script():
         if len(log_rows):
             log_to_doc("logs.xlsx", log_rows)
             print(f"Sorting complete! {len(log_rows)} file(s) organized.\n")
-            display_rows = [[row[2], row[3] or "-", Path(row[1]).parts[-1]]
+            display_rows = [[row[0], row[1] or "-", Path(row[2]).parts[-1]]
                             for row in log_rows]
             print(tabulate(display_rows, headers=["File", "Renamed To", "Destination Folder"]))
         else:
