@@ -22,6 +22,7 @@ src_dir = Path(config["src_dir"])
 log_rows = []
 
 def run_script(dry_run=False, verbose=False):
+    target_path = Path(config["target_dirs_config"]["target_path"])
     try:
         if dry_run:
             print("Dry-run mode: No files will be moved.")
@@ -31,7 +32,7 @@ def run_script(dry_run=False, verbose=False):
                 formats_list = ["." + fmt if not fmt.startswith(".") else fmt for fmt in formats["formats"]]
                 if verbose:
                     print(f"Processing category '{name}' (formats: {", ".join(formats_list)})")
-                sort_to_dir(src_dir, name, formats_list, formats["sub_dirs"], formats["recursive"], log_rows, dry_run, verbose)
+                sort_to_dir(src_dir, target_path, name, formats_list, formats["sub_dirs"], formats["recursive"], log_rows, dry_run, verbose)
         if len(log_rows):
             log_to_doc("logs.xlsx", log_rows)
             print(f"{'Sorting' if not dry_run else 'Check'} complete! {len(log_rows)} file(s) {'organized' if not dry_run else 'available'}.\n")

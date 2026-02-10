@@ -4,10 +4,7 @@ from datetime import datetime
 from pathlib import Path
 import shutil
 
-
-def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, dry_run, verbose):
-    config = load_config()
-    target_path = Path(config.get("target_path", home_dir))
+def sort_to_dir(src_dir, target_path, sort_dir, formats, use_sub_dirs, recursive, log_rows, dry_run, verbose):
     sort_dir_path = target_path / sort_dir
     sort_dir_path.mkdir(parents=True, exist_ok=True)
     if recursive:
