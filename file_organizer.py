@@ -1,11 +1,15 @@
+from config import load_config
 from utils import home_dir
 from datetime import datetime
 from pathlib import Path
 import shutil
 
+config = load_config()
+
 def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows):
-    sort_dir_path = home_dir / sort_dir
-    sort_dir_path.mkdir(exist_ok=True)
+    target_path = Path(config.get("target_path", home_dir))
+    sort_dir_path = target_path / sort_dir
+    sort_dir_path.mkdir(parents=True, exist_ok=True)
     if recursive:
         files_to_process = src_dir.rglob("*")
     else:

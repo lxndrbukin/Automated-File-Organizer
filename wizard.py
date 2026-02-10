@@ -1,4 +1,4 @@
-from utils import home_dir, config_path
+from utils import home_dir
 from config import create_config
 from pathlib import Path
 from datetime import date
