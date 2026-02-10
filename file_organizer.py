@@ -4,9 +4,9 @@ from datetime import datetime
 from pathlib import Path
 import shutil
 
-config = load_config()
 
-def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, dry_run):
+def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, dry_run, verbose):
+    config = load_config()
     target_path = Path(config.get("target_path", home_dir))
     sort_dir_path = target_path / sort_dir
     sort_dir_path.mkdir(parents=True, exist_ok=True)
@@ -14,6 +14,7 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, d
         files_to_process = src_dir.rglob("*")
     else:
         files_to_process = src_dir.iterdir()
+    files_num = 0
     for file in files_to_process:
         file_date = datetime.fromtimestamp(file.stat().st_mtime).date()
         if use_sub_dirs:
@@ -23,6 +24,7 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, d
         file_name = file.name
         if file.is_file():
             if file.suffix.lower() in formats:
+                files_num += 1
                 counter = 0
                 target_dir_path.mkdir(exist_ok=True)
                 while Path.exists(target_dir_path / file_name):
@@ -32,8 +34,14 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, d
                 log_rows.append(log_row)
                 if not dry_run:
                     try:
+                        if verbose:
+                            print(f"Moving '{file.name}' → '{target_dir_path}/{file_name}'")
                         shutil.move(file, target_dir_path / file_name)
                     except PermissionError as e:
                         print(e)
                 else:
                     print(f"[DRY-RUN] Would move {file} to {target_dir_path / file_name}")
+        if verbose and not file.is_file():
+            print(f"Skipping directory {file}")
+    if verbose:
+        print(f"Found {files_num} matching file(s) in '{sort_dir}' category")

@@ -18,8 +18,8 @@ def create_config(src_dir=default_src_dir, target_path=home_dir, target_dirs=def
             }
         }
 
-def load_config():
-    with open("config.json", "r") as config_file:
+def load_config(config_path="config.json"):
+    with open(config_path, "r") as config_file:
         config_data = json.load(config_file)
     return config_data
 

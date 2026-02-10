@@ -236,13 +236,13 @@ The script handles common issues gracefully:
 - [x] Conflict resolution with auto-renaming
 - [x] Excel logging for audit trails
 - [x] Configurable subdirectory creation
-- [ ] Dry-run mode to preview changes
+- [x] Dry-run mode to preview changes
 - [x] Terminal summary table with statistics (using `tabulate`)
 - [ ] Undo functionality using log file
 - [x] Recursive directory processing
 - [ ] File size filters and limits
 - [ ] Archive old files feature
-- [ ] Command-line arguments (`--dry-run`, `--config`, `--verbose`)
+- [x] Command-line arguments (`--src`, `--dry-run`, `--config`, `--verbose`)
 - [ ] Progress bar for large operations
 - [ ] Exclude patterns for system files
 
