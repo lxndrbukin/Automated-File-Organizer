@@ -5,6 +5,7 @@ from logger import initialize_log, log_to_doc
 from file_organizer import sort_to_dir
 from pathlib import Path
 from tabulate import tabulate
+import argparse
 
 default_config = create_config()
 
@@ -22,7 +23,7 @@ log_rows = []
 
 def run_script():
     try:
-        print(f"Sorting '{default_src_dir}'...\n")
+        print(f"Sorting '{src_dir}'...\n")
         for category_config in config["target_dirs_config"]["target_dirs"]:
             for name, formats in category_config.items():
                 formats_list = ["." + fmt if not fmt.startswith(".") else fmt for fmt in formats["formats"]]
@@ -39,4 +40,9 @@ def run_script():
         print(e)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Smart file organizer")
+    parser.add_argument("--src", type=str, help="Source directory (overrides config)")
+    args = parser.parse_args()
+    if args.src:
+        src_dir = Path(args.src)
     run_script()
