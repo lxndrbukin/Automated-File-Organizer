@@ -1,5 +1,3 @@
-from config import load_config
-from utils import home_dir
 from datetime import datetime
 from pathlib import Path
 import shutil
