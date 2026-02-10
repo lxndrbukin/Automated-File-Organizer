@@ -6,7 +6,7 @@ import shutil
 
 config = load_config()
 
-def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows):
+def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows, dry_run):
     target_path = Path(config.get("target_path", home_dir))
     sort_dir_path = target_path / sort_dir
     sort_dir_path.mkdir(parents=True, exist_ok=True)
@@ -30,7 +30,10 @@ def sort_to_dir(src_dir, sort_dir, formats, use_sub_dirs, recursive, log_rows):
                     file_name = file.stem + f"_{str(counter)}" + file.suffix
                 log_row = [file.name, file_name if file_name != file.name else "-", str(target_dir_path)]
                 log_rows.append(log_row)
-                try:
-                    shutil.move(file, target_dir_path / file_name)
-                except PermissionError as e:
-                    print(e)
+                if not dry_run:
+                    try:
+                        shutil.move(file, target_dir_path / file_name)
+                    except PermissionError as e:
+                        print(e)
+                else:
+                    print(f"[DRY-RUN] Would move {file} to {target_dir_path / file_name}")
